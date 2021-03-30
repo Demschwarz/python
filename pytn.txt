@@ -1,0 +1,27 @@
+import sqlite3
+import os
+db_path = "D://sqlite"
+db_file= 'db01.db'
+full_path = os.path.join(db_path, db_file)
+con = sqlite3.connect(full_path)
+cur = con.cursor()
+cur.execute('DROP TABLE IF EXISTS cars')
+cur.execute('DROP TABLE IF EXISTS wheels')
+cur.execute('DROP TABLE IF EXISTS engines')
+cur.execute('CREATE TABLE IF NOT EXISTS wheels (id INTEGER PRIMARY KEY AUTOINCREMENT, name VARCHAR(30), weight INTEGER);')
+cur.execute('INSERT INTO wheels VALUES(NULL,?,?)', ('winter_wheel', 20))
+cur.execute('INSERT INTO wheels VALUES(NULL,?,?)', ('summer_wheel', 10))
+cur.execute('CREATE TABLE IF NOT EXISTS engines (id INTEGER PRIMARY KEY AUTOINCREMENT, name VARCHAR(30), horsepower INTEGER, weight INTEGER);')
+cur.execute('INSERT INTO engines VALUES(NULL,?,?,?)', ('mustang', 200, 50))
+cur.execute('INSERT INTO engines VALUES(NULL,?,?,?)', ('rallyboy', 175, 40))
+cur.execute('INSERT INTO engines VALUES(NULL,?,?,?)', ('mount', 250, 100))
+cur.execute('CREATE TABLE IF NOT EXISTS cars (id INTEGER PRIMARY KEY AUTOINCREMENT, name VARCHAR(30), wheel_id INTEGER, engine_id INTEGER, FOREIGN KEY (wheel_id) REFERENCES wheels(id), FOREIGN KEY (engine_id) REFERENCES engines(id));')
+cur.execute('INSERT INTO cars VALUES(NULL,?,?,?)', ('mazda', 2, 2))
+cur.execute('INSERT INTO cars VALUES(NULL,?,?,?)', ('ferrari', 2, 1))
+cur.execute('INSERT INTO cars VALUES(NULL,?,?,?)', ('kamaz', 1, 3))
+con.commit()
+cur.execute('SELECT cars.name, wheels.name, engines.name FROM cars, wheels, engines WHERE cars.wheel_id=wheels.id AND cars.engine_id=engines.id')
+rows = cur.fetchall()
+for elem in rows:
+    print(elem)
+con.close()
